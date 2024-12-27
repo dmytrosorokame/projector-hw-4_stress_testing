@@ -1,4 +1,4 @@
-# Projector HSA Home work #24: Stress Testing
+# Projector HSA Home work #4: Stress Testing
 
 ## Results of the stress testing are in the `./scripts/results` folder
 
