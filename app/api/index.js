@@ -18,8 +18,11 @@ app.get("/", (_, res) => {
   res.send("Hello World!");
 });
 
-app.post("/user", async (req, res) => {
-  const body = req.body;
+app.post("/user", async (_, res) => {
+  const body = {
+    name: "John Doe",
+    email: `test-${Math.random() + new Date().getTime()}@gmail.com`,
+  };
 
   try {
     const user = await collection.insertOne(body);
