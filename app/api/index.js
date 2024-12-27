@@ -21,14 +21,11 @@ app.get("/", (_, res) => {
 app.post("/user", async (req, res) => {
   const body = req.body;
 
-  console.log({ body });
-
   try {
     const user = await collection.insertOne(body);
 
     res.send(`User created with id: ${user.insertedId}`);
   } catch (error) {
-    console.log(error);
     res.status(500).send("Error creating user");
   }
 });
@@ -43,8 +40,8 @@ app.get("/users", async (_, res) => {
   }
 });
 
-const PORT = 3000;
+const PORT = 3001;
 
 app.listen(PORT, () => {
-  console.log("Server is listening on port", 3000);
+  console.log("Server is listening on port", PORT);
 });

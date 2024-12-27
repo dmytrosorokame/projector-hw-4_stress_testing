@@ -1,19 +1,60 @@
 services:
+  telegraf:
+    image: telegraf:1.29-alpine
+    user: "telegraf:root"
+    depends_on:
+      - influxdb
+    links:
+      - influxdb
+    ports:
+      - 8125:8125/udp
+    volumes:
+      - ./monitoring/telegraf/etc/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  influxdb:
+    image: influxdb:1.8-alpine
+    ports:
+      - 8086:8086
+    volumes:
+      - ./:/imports
+      - influxdb_volume:/var/lib/influxdb
+    env_file: .env
+
+  grafana:
+    image: grafana/grafana:10.2.2
+    depends_on:
+      - influxdb
+    links:
+      - influxdb
+    ports:
+      - 3000:3000
+    volumes:
+      - grafana_volume:/var/lib/grafana
+      - ./monitoring/grafana/provisioning/:/etc/grafana/provisioning/
+      - ./monitoring/grafana/dashboards/:/var/lib/grafana/dashboards/
+      - ./monitoring/grafana/grafana.ini:/etc/grafana/grafana.ini
+    env_file: .env
+
   mongodb:
-    build: ./mongodb
+    build: ./app/db
     env_file: .env
     ports:
       - "27017:27017"
     volumes:
       - mongodb_volume:/data/db
+    command:
+      ["mongod", "--setParameter", "diagnosticDataCollectionEnabled=true"]
 
   api:
-    build: ./api
+    build: ./app/api
     env_file: .env
     depends_on:
       - mongodb
     ports:
-      - "3000:3000"
+      - "3001:3001"
 
 volumes:
   mongodb_volume:
+  influxdb_volume:
+  grafana_volume:
